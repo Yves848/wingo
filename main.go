@@ -11,11 +11,13 @@ import (
 )
 
 type model struct {
-	textInput   textinput.Model
-	choices     []string
-	cursor      int
-	selected    map[int]struct{}
-	PromptStyle lipgloss.Style
+	textInput    textinput.Model
+	list         tea.Model
+	choices      []string
+	cursor       int
+	selected     map[int]struct{}
+	PromptStyle  lipgloss.Style
+	notification toast.Notification
 }
 
 func initialModel() model {
@@ -32,6 +34,17 @@ func initialModel() model {
 		choices:   []string{"Choix 1", "Choix 2", "Choix 3"},
 		selected:  make(map[int]struct{}),
 		cursor:    0,
+		notification: toast.Notification{
+			AppID:   "Winget Helper",
+			Title:   "Winpack",
+			Icon:    "c:\\Users\\yvesg\\git\\wingo\\winpack.png",
+			Message: "There are updates available for your installed packages!",
+			// Icon:    "go.png", // This file must exist (remove this line if it doesn't)
+			Actions: []toast.Action{
+				{Type: "protocol", Label: "I'm a button", Arguments: ""},
+				{Type: "protocol", Label: "Me too!", Arguments: ""},
+			},
+		},
 	}
 }
 
@@ -55,6 +68,12 @@ func (m model) Update(msg tea.Msg) (tea.Model, tea.Cmd) {
 		case tea.KeyDown:
 			if m.cursor < len(m.choices)-1 {
 				m.cursor++
+			}
+		case tea.KeyCtrlP:
+			m.notification.Actions[0].Label = "coucou"
+			err := m.notification.Push()
+			if err != nil {
+				log.Fatalln(err)
 			}
 		}
 
@@ -82,21 +101,8 @@ func (m model) View() string {
 }
 
 func main() {
-	notification := toast.Notification{
-		AppID:   "Example App",
-		Title:   "My notification",
-		Message: "Some message about how important something is...",
-		// Icon:    "go.png", // This file must exist (remove this line if it doesn't)
-		Actions: []toast.Action{
-			{Type: "protocol", Label: "I'm a button", Arguments: ""},
-			{Type: "protocol", Label: "Me too!", Arguments: ""},
-		},
-	}
-	err := notification.Push()
-	if err != nil {
-		log.Fatalln(err)
-	}
-	p := tea.NewProgram(initialModel())
+
+	p := tea.NewProgram(initialModel(), tea.WithAltScreen())
 	if _, err := p.Run(); err != nil {
 		fmt.Println("Error running program:", err)
 	}
