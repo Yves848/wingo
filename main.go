@@ -37,7 +37,7 @@ func initialModel() model {
 		notification: toast.Notification{
 			AppID:   "Winget Helper",
 			Title:   "Winpack",
-			Icon:    "c:\\Users\\yvesg\\git\\wingo\\winpack.png",
+			Icon:    "d:\\git\\wingo\\winpack.png",
 			Message: "There are updates available for your installed packages!",
 			// Icon:    "go.png", // This file must exist (remove this line if it doesn't)
 			Actions: []toast.Action{
